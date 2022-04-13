@@ -1,7 +1,6 @@
-import React from "react";
-import { Box, Container, CssBaseline, Toolbar } from "@mui/material";
+import { Box, Container, CssBaseline } from "@mui/material";
 import NavBar from "./components/NavBar";
-import Post from "./components/Post";
+import PostListElement from "./components/PostList";
 
 function App() {
   return (
@@ -9,9 +8,16 @@ function App() {
       <CssBaseline />
       <NavBar />
       <Container
-        sx={{ mt: 12, mb: 4, justifyContent: "center", display: "flex" }}
+        sx={{
+          mt: 12,
+          mb: 4,
+          justifyContent: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
       >
-        <Post />
+        <PostListElement />
       </Container>
     </Box>
   );
