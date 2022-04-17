@@ -9,7 +9,7 @@ function App() {
       <NavBar />
       <Container
         sx={{
-          mt: 12,
+          mt: 10,
           mb: 4,
           justifyContent: "center",
           display: "flex",

@@ -10,9 +10,16 @@ import {
 import ThumbUpIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownIcon from "@mui/icons-material/ThumbDownOutlined";
 import CommentIcon from "@mui/icons-material/CommentOutlined";
-import { useState } from "react";
-import Comment from "./Comment";
+import { useEffect, useState } from "react";
 import { green } from "@mui/material/colors";
+import CommentListElement, {
+  CommentList,
+  CommentListJson,
+} from "./CommentList";
+import { ErrorList, FieldError } from "../utils/ErrorInterfaces";
+import { API_URL, countryCode, dateTimeFormatOptions } from "../utils/Config";
+import { sleep } from "../utils/Random";
+import RatingElement, { Rating, RatingType } from "./Rating";
 
 export interface PostGeneric<T> {
   id: string;
@@ -20,9 +27,10 @@ export interface PostGeneric<T> {
   body: string;
   isDeleted: boolean;
   creationDate: T;
-  editDate?: T;
+  editDate: T | null;
   userId: string;
   userFullName: string;
+  userRating: Rating | null;
   rating: number;
 }
 
@@ -34,9 +42,63 @@ interface Props {
 
 const PostElement = ({ post }: Props) => {
   const [areCommentsExpanded, setAreCommentsExpanded] = useState(false);
+  const [isUnknownError, setIsUnknownError] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldError[]>([]);
+  const [commentList, setCommentList] = useState<CommentList | undefined>(
+    undefined
+  );
 
   const handleExpandCommentsClick = () => {
     setAreCommentsExpanded((expanded) => !expanded);
+  };
+
+  useEffect(() => {
+    if (areCommentsExpanded) {
+      resetState();
+      getCommentList();
+    }
+  }, [areCommentsExpanded]);
+
+  const resetState = () => {
+    setIsUnknownError(false);
+    setFieldErrors([]);
+    setCommentList(undefined);
+  };
+
+  const getCommentList = async () => {
+    const response = await fetch(`${API_URL}post/${post.id}/comment`);
+    await sleep(500);
+
+    if (response.status === 404) {
+      await response
+        .json()
+        .then((errorList: ErrorList) => setFieldErrors(errorList.errors));
+      return;
+    }
+
+    if (response.status === 200) {
+      await response
+        .json()
+        .then((commentListJson: CommentListJson) => ({
+          ...commentListJson,
+          comments: commentListJson.comments.map((comment) => ({
+            ...comment,
+            creationDate: new Date(comment.creationDate),
+            editDate: comment.editDate ? new Date(comment.editDate) : null,
+            replies:
+              comment.replies?.map((reply) => ({
+                ...reply,
+                creationDate: new Date(reply.creationDate),
+                editDate: reply.editDate ? new Date(reply.editDate) : null,
+                replies: null,
+              })) ?? null,
+          })),
+        }))
+        .then(setCommentList);
+      return;
+    }
+
+    setIsUnknownError(true);
   };
 
   return (
@@ -67,7 +129,10 @@ const PostElement = ({ post }: Props) => {
               color="text.secondary"
               sx={{ placeSelf: "center" }}
             >
-              {post.creationDate.toLocaleString()}
+              {post.creationDate.toLocaleDateString(
+                countryCode,
+                dateTimeFormatOptions
+              )}
             </Typography>
           </div>
         </div>
@@ -80,28 +145,21 @@ const PostElement = ({ post }: Props) => {
       <Box>
         <div className="PostDataGridBottom">
           <div className="PostDataGridRating">
-            <IconButton aria-label="like" size="small">
-              <ThumbUpIcon fontSize="medium" />
-            </IconButton>
-            <IconButton aria-label="dislike" size="small">
-              <ThumbDownIcon fontSize="medium" />
-            </IconButton>
-            <Typography
-              variant="button"
-              color="green"
-              sx={{ ml: 1, placeSelf: "center", fontSize: 18 }}
-            >
-              {post.rating}
-            </Typography>
+            <RatingElement
+              userRating={post.userRating}
+              postRating={post.rating}
+              parentId={post.id}
+              ratingType={RatingType.Post}
+            />
           </div>
           <div className="PostDataGridComments">
-            <Typography
+            {/* <Typography
               variant="button"
               color="blue"
               sx={{ mr: 1, placeSelf: "center", fontSize: 18 }}
             >
               5
-            </Typography>
+            </Typography> */}
             <IconButton
               aria-label="comments"
               size="small"
@@ -116,16 +174,11 @@ const PostElement = ({ post }: Props) => {
       <Box>
         <Collapse in={areCommentsExpanded} timeout="auto">
           <Divider sx={{ mt: 1, mb: 1.5 }} />
-          <Typography sx={{ ml: 1 }} variant="h6">
-            Komentarai
-          </Typography>
-          <Comment />
-          <Comment isReply={true} />
-          <Comment isReply={true} />
-          <Comment isReply={true} />
-          <Comment />
-          <Comment />
-          <Comment />
+          <CommentListElement
+            isUnknownError={isUnknownError}
+            fieldErrors={fieldErrors}
+            commentList={commentList}
+          />
         </Collapse>
       </Box>
     </Card>

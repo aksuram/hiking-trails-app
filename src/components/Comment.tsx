@@ -2,18 +2,34 @@ import { Avatar, Box, Card, IconButton, Typography } from "@mui/material";
 import { green } from "@mui/material/colors";
 import ThumbUpIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownIcon from "@mui/icons-material/ThumbDownOutlined";
+import { countryCode, dateTimeFormatOptions } from "../utils/Config";
 
-interface Props {
-  isReply?: boolean;
+export interface CommentGeneric<T> {
+  id: string;
+  body: string;
+  isDeleted: boolean;
+  creationDate: T;
+  editDate: T | null;
+  userId: string;
+  userFullName: string;
+  replyToId: string;
+  rating: number;
+  replies: CommentGeneric<T>[] | null;
 }
 
-const Comment = (props: Props) => {
-  const leftOffset = props.isReply ? 6 : 0;
+export type Comment = CommentGeneric<Date>;
+
+interface Props {
+  comment: Comment;
+}
+
+const CommentElement = ({ comment }: Props) => {
+  const leftOffset = comment.replyToId ? 6 : 0;
 
   return (
     <Card
       sx={{
-        backgroundColor: "#F5F5F5",
+        backgroundColor: "#FAFAFA",
         px: 2,
         py: 1,
         ml: leftOffset,
@@ -26,16 +42,16 @@ const Comment = (props: Props) => {
           <div className="CommentDataGridUser">
             <Avatar
               sx={{ width: 25, height: 25, bgcolor: green[500] }}
-              alt="Something"
+              alt={comment.userFullName[0]}
             >
-              T
+              {comment.userFullName[0]}
             </Avatar>
             <Typography
               variant="subtitle2"
               color="text.secondary"
               sx={{ ml: 1, placeSelf: "center" }}
             >
-              Tadas Maruška
+              {comment.userFullName}
             </Typography>
           </div>
           <div className="CommentDataGridDate">
@@ -44,18 +60,17 @@ const Comment = (props: Props) => {
               color="text.secondary"
               sx={{ placeSelf: "center" }}
             >
-              Wednesday, April 13, 2022
+              {comment.creationDate.toLocaleDateString(
+                countryCode,
+                dateTimeFormatOptions
+              )}
             </Typography>
           </div>
         </div>
       </Box>
       <Box>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the
-          mussels, if you like.This impressive paella is a perfect party dish
-          and a fun meal to cook together with your guests. Add 1 cup of frozen
-          peas along with the mussels, if you like.This impressive paella is a
+          {comment.body}
         </Typography>
       </Box>
       <Box>
@@ -72,7 +87,7 @@ const Comment = (props: Props) => {
               color="green"
               sx={{ ml: 1, placeSelf: "center", fontSize: 16 }}
             >
-              7
+              {comment.rating}
             </Typography>
           </div>
           {/* <div className="CommentDataGridComments">
@@ -98,4 +113,4 @@ const Comment = (props: Props) => {
   );
 };
 
-export default Comment;
+export default CommentElement;

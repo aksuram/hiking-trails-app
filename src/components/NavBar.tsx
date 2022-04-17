@@ -22,7 +22,7 @@ const NavBar = () => {
         position="fixed"
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
-        <Toolbar>
+        <Toolbar variant="dense">
           <Typography variant="h6" noWrap component="div">
             Hiking Trails
           </Typography>
@@ -41,7 +41,7 @@ const NavBar = () => {
           },
         }}
       >
-        <Toolbar />
+        <Toolbar variant="dense" />
         <Box sx={{ overflow: "auto" }}>
           <List>
             {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
