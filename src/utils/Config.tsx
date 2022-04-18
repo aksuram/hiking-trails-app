@@ -1,4 +1,9 @@
-import { createTheme, Theme } from "@mui/material";
+import { createTheme, LinkProps, Theme } from "@mui/material";
+import * as React from "react";
+import {
+  Link as RouterLink,
+  LinkProps as RouterLinkProps,
+} from "react-router-dom";
 
 //API
 export const API_URL = "https://localhost:7101/api/";
@@ -14,8 +19,18 @@ export const dateTimeFormatOptions: Intl.DateTimeFormatOptions = {
 export const countryCode = "lt-LT";
 export const unknownErrorMessage = "Įvyko nežinoma klaida";
 
+const LinkBehavior = React.forwardRef<
+  any,
+  Omit<RouterLinkProps, "to"> & { href: RouterLinkProps["to"] }
+>((props, ref) => {
+  const { href, ...other } = props;
+  return (
+    <RouterLink data-testid="custom-link" ref={ref} to={href} {...other} />
+  );
+});
+
 //THEMING
-export const theme: Theme = createTheme({
+export const theme = createTheme({
   palette: {
     background: {
       default: "#FAFAFA",
@@ -23,6 +38,18 @@ export const theme: Theme = createTheme({
   },
   shape: {
     borderRadius: 16,
+  },
+  components: {
+    MuiLink: {
+      defaultProps: {
+        component: LinkBehavior,
+      } as LinkProps,
+    },
+    MuiButtonBase: {
+      defaultProps: {
+        LinkComponent: LinkBehavior,
+      },
+    },
   },
   shadows: [
     "none",

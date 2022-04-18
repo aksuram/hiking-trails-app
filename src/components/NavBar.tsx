@@ -1,19 +1,25 @@
 import {
   AppBar,
   Box,
-  Divider,
   Drawer,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Toolbar,
   Typography,
 } from "@mui/material";
-import { MoveToInbox, Mail } from "@mui/icons-material";
+import HomeIcon from "@mui/icons-material/HomeOutlined";
+import PostsIcon from "@mui/icons-material/TextSnippetOutlined";
 import NavBarUser from "./NavBarUser";
+import { Link } from "react-router-dom";
 
-const drawerWidth = 240;
+const drawerWidth = 200;
+
+const listItems: { name: string; path: string; icon: React.ReactElement }[] = [
+  { name: "Namai", path: "/", icon: <HomeIcon /> },
+  { name: "Įrašai", path: "/posts", icon: <PostsIcon /> },
+];
 
 const NavBar = () => {
   return (
@@ -27,7 +33,9 @@ const NavBar = () => {
             Hiking Trails
           </Typography>
           <Box sx={{ flexGrow: 1, display: "flex" }} />
-          <NavBarUser />
+          <Box sx={{ flexGrow: 0 }}>
+            <NavBarUser />
+          </Box>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -44,24 +52,11 @@ const NavBar = () => {
         <Toolbar variant="dense" />
         <Box sx={{ overflow: "auto" }}>
           <List>
-            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <MoveToInbox /> : <Mail />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <MoveToInbox /> : <Mail />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
+            {listItems.map((item) => (
+              <ListItemButton component={Link} key={item.name} to={item.path}>
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.name} />
+              </ListItemButton>
             ))}
           </List>
         </Box>

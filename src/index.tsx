@@ -5,13 +5,16 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "./utils/Config";
+import UserProvider from "./components/UserProvider";
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     <React.StrictMode>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <UserProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </UserProvider>
     </React.StrictMode>
   </ThemeProvider>,
   document.getElementById("root")

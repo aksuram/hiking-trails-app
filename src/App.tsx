@@ -1,8 +1,11 @@
 import { Box, Container, CssBaseline } from "@mui/material";
+import { Navigate, Route, Routes } from "react-router-dom";
+import Home from "./components/Home";
 import NavBar from "./components/NavBar";
+import NotFound from "./components/NotFound";
 import PostListElement from "./components/PostList";
 
-function App() {
+const App = () => {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -17,10 +20,18 @@ function App() {
           alignItems: "center",
         }}
       >
-        <PostListElement />
+        <Routes>
+          <Route path="" element={<Home />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/posts" element={<PostListElement />} />
+
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<Navigate to="/404" replace />} />
+        </Routes>
+        {/* <PostListElement /> */}
       </Container>
     </Box>
   );
-}
+};
 
 export default App;

@@ -69,6 +69,7 @@ const PostElement = ({ post }: Props) => {
     const response = await fetch(`${API_URL}post/${post.id}/comment`);
     await sleep(500);
 
+    //TODO: check if response.ok
     if (response.status === 404) {
       await response
         .json()

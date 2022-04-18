@@ -1,9 +1,10 @@
 import { IconButton, Typography } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownIcon from "@mui/icons-material/ThumbDownOutlined";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { API_URL } from "../utils/Config";
 import { HTTPMethod } from "../utils/Random";
+import { UserContext } from "./UserContext";
 
 export enum RatingType {
   Post,
@@ -42,6 +43,8 @@ const RatingElement = ({
     userRating: userRating,
     postRating: postRating,
   });
+
+  const { userInfo } = useContext(UserContext);
 
   //TODO: Disallow pressing rating buttons while fetch hasn't returned a response?
   const ratingFetch = async (
@@ -91,6 +94,7 @@ const RatingElement = ({
           commentId: ratingType === RatingType.Comment ? parentId : null,
         }),
       }).then((newUserRating) => {
+        console.log();
         setRatingState((currentRatingState) => {
           return {
             userRating: newUserRating,
@@ -208,6 +212,7 @@ const RatingElement = ({
   return (
     <>
       <IconButton
+        disabled={userInfo === null}
         onClick={handleLikeClick}
         aria-label="like"
         size="small"
@@ -217,6 +222,7 @@ const RatingElement = ({
       </IconButton>
 
       <IconButton
+        disabled={userInfo === null}
         onClick={handleDislikeClick}
         aria-label="dislike"
         size="small"

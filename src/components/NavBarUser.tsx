@@ -1,17 +1,23 @@
 import {
   Avatar,
   Box,
+  Button,
   IconButton,
   Menu,
   MenuItem,
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { UserContext } from "./UserContext";
+import LoginIcon from "@mui/icons-material/Login";
+import { Link } from "react-router-dom";
 
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 const NavBarUser = () => {
+  const userContext = useContext(UserContext);
+
   const [menuAnchorElement, setMenuAnchorElement] =
     useState<HTMLElement | null>(null);
 
@@ -22,19 +28,40 @@ const NavBarUser = () => {
     setMenuAnchorElement(null);
   };
 
+  if (userContext.userInfo === null) {
+    return (
+      <>
+        <Button
+          href="/login"
+          variant="text"
+          color="inherit"
+          endIcon={<LoginIcon />}
+        >
+          Prisijungti
+        </Button>
+      </>
+    );
+  }
+
   return (
-    <Box sx={{ flexGrow: 0 }}>
-      <Tooltip title="Open settings">
-        <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
-          <Avatar
-            sx={{ width: 35, height: 35 }}
-            alt="User User"
-            src="/static/images/avatar/2.jpg"
-          />
-        </IconButton>
-      </Tooltip>
+    <>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Typography sx={{ mr: 1, fontSize: 18 }}>
+          {userContext.userInfo.firstName}
+        </Typography>
+        <Tooltip title="Open settings">
+          <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
+            <Avatar
+              sx={{ width: 35, height: 35 }}
+              alt="User User"
+              src="/static/images/avatar/2.jpg"
+            />
+          </IconButton>
+        </Tooltip>
+      </div>
       <Menu
-        sx={{ mt: "45px" }}
+        elevation={1}
+        sx={{ mt: "30px" }}
         id="menu-appbar"
         anchorEl={menuAnchorElement}
         anchorOrigin={{
@@ -55,7 +82,7 @@ const NavBarUser = () => {
           </MenuItem>
         ))}
       </Menu>
-    </Box>
+    </>
   );
 };
 
