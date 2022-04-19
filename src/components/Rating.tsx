@@ -68,6 +68,7 @@ const RatingElement = ({
         body: fetchOptions.payload,
       });
 
+      //IMPORTANT: response.ok yra true, kai statusCode yra nuo 200 iki 299
       if (!response.ok) {
         console.log("TODO: NEPAVYKO ĮVYKDYTI ĮVERTINIMO UŽKLAUSOS");
         return null;

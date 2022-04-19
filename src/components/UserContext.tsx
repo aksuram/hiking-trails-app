@@ -7,6 +7,7 @@ export interface UserInfo {
   firstName: string;
   lastName: string;
   fullName: string;
+  token: string;
   //TODO: token expiration date?
 }
 
