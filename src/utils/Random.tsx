@@ -8,3 +8,6 @@ export enum HTTPMethod {
   DELETE = "DELETE",
   PATCH = "PATCH",
 }
+
+export const capitalizedAlphaRegex =
+  /^[A-ZĄČĘĖĮŠŲŪŽ][A-Za-z ĄČĘĖĮŠŲŪŽąčęėįšųūž]+$/;

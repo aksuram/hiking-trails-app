@@ -8,6 +8,7 @@ import { useContext, useState } from "react";
 import { ErrorList } from "../utils/ErrorInterfaces";
 import { UserContext } from "./UserContext";
 import jwt_decode from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 interface FormStructure {
   email: string;
@@ -27,6 +28,7 @@ const validationSchema = yup.object({
 const Login = () => {
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const { setUserInfo } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const handleSubmit = async (
     values: FormStructure,
@@ -55,7 +57,7 @@ const Login = () => {
           fullName: tokenData.fullName as string,
           token: token,
         });
-        //TODO: redirect
+        navigate("/");
         return;
       }
 
@@ -135,7 +137,7 @@ const Login = () => {
           justifyContent: "flex-end",
         }}
       >
-        <Link underline="none" href="/register">
+        <Link underline="none" href="/registration">
           Užsiregistruokite čia
         </Link>
       </div>

@@ -11,12 +11,13 @@ import {
 import React, { useContext, useState } from "react";
 import { UserContext } from "./UserContext";
 import LoginIcon from "@mui/icons-material/Login";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Profile", "Account", "Dashboard"];
 
 const NavBarUser = () => {
   const userContext = useContext(UserContext);
+  const navigate = useNavigate();
 
   const [menuAnchorElement, setMenuAnchorElement] =
     useState<HTMLElement | null>(null);
@@ -26,6 +27,11 @@ const NavBarUser = () => {
   };
   const handleCloseMenu = () => {
     setMenuAnchorElement(null);
+  };
+
+  const redirectToHomepage = () => {
+    handleCloseMenu();
+    navigate("/logout");
   };
 
   if (userContext.userInfo === null) {
@@ -81,6 +87,9 @@ const NavBarUser = () => {
             <Typography textAlign="center">{setting}</Typography>
           </MenuItem>
         ))}
+        <MenuItem key={"eh"} onClick={redirectToHomepage}>
+          <Typography textAlign="center">Logout</Typography>
+        </MenuItem>
       </Menu>
     </>
   );

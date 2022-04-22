@@ -2,9 +2,11 @@ import { Box, Container, CssBaseline } from "@mui/material";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import Login from "./components/Login";
+import Logout from "./components/Logout";
 import NavBar from "./components/NavBar";
 import NotFound from "./components/NotFound";
 import PostListElement from "./components/PostList";
+import Registration from "./components/Registration";
 
 const App = () => {
   return (
@@ -24,8 +26,12 @@ const App = () => {
         <Routes>
           <Route path="" element={<Home />} />
           <Route path="/" element={<Home />} />
-          <Route path="/posts" element={<PostListElement />} />
+
           <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/registration" element={<Registration />} />
+
+          <Route path="/posts" element={<PostListElement />} />
 
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
