@@ -1,4 +1,4 @@
-import { createTheme, LinkProps, Theme } from "@mui/material";
+import { createTheme, LinkProps, styled, Theme } from "@mui/material";
 import * as React from "react";
 import {
   Link as RouterLink,
@@ -19,6 +19,7 @@ export const dateTimeFormatOptions: Intl.DateTimeFormatOptions = {
 export const countryCode = "lt-LT";
 export const unknownErrorMessage = "Įvyko nežinoma klaida";
 
+//CHANGED ELEMENT BEHAVIOUR
 const LinkBehavior = React.forwardRef<
   any,
   Omit<RouterLinkProps, "to"> & { href: RouterLinkProps["to"] }
@@ -27,6 +28,10 @@ const LinkBehavior = React.forwardRef<
   return (
     <RouterLink data-testid="custom-link" ref={ref} to={href} {...other} />
   );
+});
+
+export const AvatarInput = styled("input")({
+  display: "none",
 });
 
 //THEMING

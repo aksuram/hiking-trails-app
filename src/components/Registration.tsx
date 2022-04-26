@@ -1,17 +1,24 @@
 import {
   Alert,
   Avatar,
+  Badge,
   Button,
   Card,
   Divider,
+  IconButton,
+  Link,
   Typography,
 } from "@mui/material";
-import { Form, Formik } from "formik";
+import { Form, Formik, FormikHelpers } from "formik";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TextFieldWithErrors from "./TextFieldWithErrors";
 import * as yup from "yup";
 import { capitalizedAlphaRegex } from "../utils/Random";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhotoOutlined";
+import ClearIcon from "@mui/icons-material/Clear";
+import { API_URL, AvatarInput } from "../utils/Config";
+import { ErrorList } from "../utils/ErrorInterfaces";
 
 interface FormStructure {
   email: string;
@@ -19,6 +26,12 @@ interface FormStructure {
   repeatPassword: string;
   firstName: string;
   lastName: string;
+  avatar: any;
+}
+
+interface ResizedImage {
+  file: File;
+  fileString: string;
 }
 
 const validationSchema = yup.object({
@@ -52,14 +65,95 @@ const validationSchema = yup.object({
       capitalizedAlphaRegex,
       "Pavardė prasideda didžiąja raide, pavardėje galimos tik raidės"
     ),
+  avatar: yup
+    .mixed()
+    .test(
+      "fileSize",
+      "Pasirinkta per didelė nuotrauka, neviršykite 10 MB",
+      (file) => {
+        if (file === null) return true;
+        return file.size <= 10000000; //10MB
+      }
+    ),
 });
 
 //TODO: Redirect if loggedin
 const Registration = () => {
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [avatarImage, setAvatarImage] = useState<ResizedImage | null>(null);
   const navigate = useNavigate();
 
-  //TODO: handle submit function
+  const resizeImage = (file: File) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = (onloadEvent) => {
+      const image = new Image();
+      image.src = onloadEvent.target?.result as string;
+      image.onload = () => {
+        const canvas = document.createElement("canvas") as HTMLCanvasElement;
+        canvas.width = 100;
+        canvas.height = 100;
+        canvas.getContext("2d")?.drawImage(image, 0, 0, 100, 100);
+        const newFileString = canvas.toDataURL("image/jpeg", 1);
+        canvas.toBlob(
+          (blob) => {
+            if (blob === null) return;
+            const newFile = new File([blob], file.name, {
+              type: "image/jpeg",
+              lastModified: Date.now(),
+            });
+            setAvatarImage({
+              file: newFile,
+              fileString: newFileString,
+            });
+          },
+          "image/jpeg",
+          1
+        );
+      };
+    };
+  };
+
+  const handleSubmit = async (
+    values: FormStructure,
+    formikHelpers: FormikHelpers<FormStructure>
+  ) => {
+    setAlertMessage(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("email", values.email);
+      formData.append("password", values.password);
+      formData.append("repeatPassword", values.repeatPassword);
+      formData.append("firstName", values.firstName);
+      formData.append("lastName", values.lastName);
+      if (avatarImage !== null) {
+        formData.append("avatar", avatarImage.file);
+      }
+
+      const response = await fetch(`${API_URL}register`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.status === 201) {
+        navigate("/login", {
+          state: "Sėkmingai užsiregistravote! Jau galite prisijungti",
+        });
+        return;
+      }
+
+      if (response.status === 400) {
+        const { errors } = (await response.json()) as ErrorList;
+        errors.forEach((x) => formikHelpers.setFieldError(x.field, x.error));
+        return;
+      }
+
+      setAlertMessage("Įvyko nežinoma klaida");
+    } catch (error) {
+      setAlertMessage("Įvyko nežinoma klaida");
+    }
+  };
 
   const initialValues: FormStructure = {
     email: "",
@@ -67,6 +161,7 @@ const Registration = () => {
     repeatPassword: "",
     firstName: "",
     lastName: "",
+    avatar: null,
   };
 
   return (
@@ -83,17 +178,70 @@ const Registration = () => {
 
       <Formik
         initialValues={initialValues}
-        onSubmit={(values) => {
-          return;
-        }}
-        // onSubmit={handleSubmit}
+        onSubmit={handleSubmit}
         validationSchema={validationSchema}
       >
-        {({ values, errors, isSubmitting }) => (
+        {({ errors, isSubmitting, setFieldValue }) => (
           <Form>
             <div style={{ display: "flex", justifyContent: "center" }}>
-              <Avatar sx={{ mt: 3, width: 70, height: 70 }}></Avatar>
+              <Badge
+                sx={{ mt: 3 }}
+                anchorOrigin={{
+                  vertical: avatarImage ? "top" : "bottom",
+                  horizontal: "right",
+                }}
+                badgeContent={
+                  <div>
+                    {!avatarImage && (
+                      <label>
+                        <AvatarInput
+                          name="avatar"
+                          accept="image/*"
+                          type="file"
+                          onChange={(e) => {
+                            if (e?.currentTarget?.files !== null) {
+                              if (!e.currentTarget.files.length) return;
+                              resizeImage(e.currentTarget.files[0]);
+                              setFieldValue("avatar", e.currentTarget.files[0]);
+                            }
+                          }}
+                        />
+                        <IconButton
+                          aria-label="upload photo"
+                          color="primary"
+                          component="span"
+                        >
+                          <AddAPhotoIcon />
+                        </IconButton>
+                      </label>
+                    )}
+                    {avatarImage && (
+                      <IconButton
+                        onClick={() => {
+                          setAvatarImage(null);
+                          setFieldValue("avatar", null);
+                        }}
+                        aria-label="remove photo"
+                        color="error"
+                        component="span"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    )}
+                  </div>
+                }
+              >
+                <Avatar
+                  sx={{ width: 70, height: 70 }}
+                  src={avatarImage?.fileString}
+                />
+              </Badge>
             </div>
+            {errors.avatar ? (
+              <Alert severity="error" sx={{ mt: 3, mb: -1 }}>
+                {errors.avatar}
+              </Alert>
+            ) : null}
 
             <div
               style={{
@@ -160,12 +308,21 @@ const Registration = () => {
                 Registruotis
               </Button>
             </div>
-
-            <pre>{JSON.stringify(values, null, 2)}</pre>
-            <pre>{JSON.stringify(errors, null, 2)}</pre>
           </Form>
         )}
       </Formik>
+
+      <div
+        style={{
+          marginTop: "20px",
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
+        <Link underline="none" href="/login">
+          Prisijunkite čia
+        </Link>
+      </div>
     </Card>
   );
 };

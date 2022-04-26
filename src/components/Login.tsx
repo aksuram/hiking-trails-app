@@ -8,7 +8,7 @@ import { useContext, useState } from "react";
 import { ErrorList } from "../utils/ErrorInterfaces";
 import { UserContext } from "./UserContext";
 import jwt_decode from "jwt-decode";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface FormStructure {
   email: string;
@@ -24,17 +24,18 @@ const validationSchema = yup.object({
 });
 
 //TODO: Redirect if already loggedin
-//TODO: Add logout
 const Login = () => {
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const { setUserInfo } = useContext(UserContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (
     values: FormStructure,
     formikHelpers: FormikHelpers<FormStructure>
   ) => {
     setAlertMessage(null);
+    location.state = null;
 
     try {
       const response = await fetch(`${API_URL}login`, {
@@ -87,6 +88,10 @@ const Login = () => {
         Prisijungimas
       </Typography>
 
+      {location.state && (
+        <Alert sx={{ mt: 4 }}>{location.state as string}</Alert>
+      )}
+
       {alertMessage && (
         <Alert severity="error" sx={{ mt: 4 }}>
           {alertMessage}
@@ -98,7 +103,7 @@ const Login = () => {
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
       >
-        {({ values, errors, isSubmitting }) => (
+        {({ isSubmitting }) => (
           <Form>
             <TextFieldWithErrors
               name="email"
@@ -123,9 +128,6 @@ const Login = () => {
                 Prisijungti
               </Button>
             </div>
-
-            {/* <pre>{JSON.stringify(values, null, 2)}</pre>
-            <pre>{JSON.stringify(errors, null, 2)}</pre> */}
           </Form>
         )}
       </Formik>
