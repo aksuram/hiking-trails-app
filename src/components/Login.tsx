@@ -49,6 +49,9 @@ const Login = () => {
       if (response.status === 200) {
         const { token } = (await response.json()) as { token: string };
         const tokenData: any = jwt_decode(token);
+        let avatar = tokenData.avatar as string | null;
+        if (avatar === "") avatar = null;
+
         setUserInfo({
           id: tokenData.id as string,
           email: tokenData.email as string,
@@ -56,6 +59,7 @@ const Login = () => {
           firstName: tokenData.firstName as string,
           lastName: tokenData.lastName as string,
           fullName: tokenData.fullName as string,
+          avatar: avatar,
           token: token,
         });
         navigate("/");

@@ -13,7 +13,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     localStorage.setItem("userInfo", JSON.stringify(userInfo));
-    localStorage.setItem("token", JSON.stringify(userInfo?.token));
+    localStorage.setItem("token", userInfo?.token ?? "");
   }, [userInfo]);
 
   return (

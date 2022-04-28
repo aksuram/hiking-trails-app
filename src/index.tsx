@@ -6,6 +6,10 @@ import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "./utils/Config";
 import UserProvider from "./components/UserProvider";
+import "moment/locale/lt";
+import * as moment from "moment";
+
+moment.locale("he");
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>

@@ -1,4 +1,10 @@
-import { createTheme, LinkProps, styled, Theme } from "@mui/material";
+import {
+  createTheme,
+  LinkProps,
+  styled,
+  TextField,
+  Theme,
+} from "@mui/material";
 import * as React from "react";
 import {
   Link as RouterLink,
@@ -7,17 +13,22 @@ import {
 
 //API
 export const API_URL = "https://localhost:7101/api/";
+export const IMG_URL = "https://localhost:7101/images/";
+
+//CONSTANTS
+export const DO_NOT_SHOW = "DO_NOT_SHOW";
+export const countryCode = "lt-LT";
+export const unknownErrorMessage = "Įvyko nežinoma klaida";
+export const incorrectUrlMessage = "Įvedėte nitinkamą nuorodą";
 
 //LOCALIZATION
 export const dateTimeFormatOptions: Intl.DateTimeFormatOptions = {
   weekday: "long",
-  year: "numeric",
   month: "long",
   day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
 };
-
-export const countryCode = "lt-LT";
-export const unknownErrorMessage = "Įvyko nežinoma klaida";
 
 //CHANGED ELEMENT BEHAVIOUR
 const LinkBehavior = React.forwardRef<
@@ -32,6 +43,12 @@ const LinkBehavior = React.forwardRef<
 
 export const AvatarInput = styled("input")({
   display: "none",
+});
+
+export const CommentTextField = styled(TextField)({
+  "& .MuiInputBase-root": {
+    backgroundColor: "white",
+  },
 });
 
 //THEMING

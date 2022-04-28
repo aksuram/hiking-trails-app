@@ -3,35 +3,32 @@ import {
   Box,
   Button,
   IconButton,
+  ListItemButton,
+  ListItemIcon,
   Menu,
-  MenuItem,
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "./UserContext";
 import LoginIcon from "@mui/icons-material/Login";
-import { Link, useNavigate } from "react-router-dom";
-
-const settings = ["Profile", "Account", "Dashboard"];
+import { Link } from "react-router-dom";
+import LogoutIcon from "@mui/icons-material/Logout";
+import ProfileIcon from "@mui/icons-material/AccountCircle";
+import { IMG_URL } from "../utils/Config";
 
 const NavBarUser = () => {
+  const avatarElement = useRef<HTMLButtonElement | null>(null);
   const userContext = useContext(UserContext);
-  const navigate = useNavigate();
 
   const [menuAnchorElement, setMenuAnchorElement] =
-    useState<HTMLElement | null>(null);
+    useState<HTMLButtonElement | null>(null);
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setMenuAnchorElement(event.currentTarget);
+  const handleOpenMenu = () => {
+    setMenuAnchorElement(avatarElement.current);
   };
   const handleCloseMenu = () => {
     setMenuAnchorElement(null);
-  };
-
-  const redirectToHomepage = () => {
-    handleCloseMenu();
-    navigate("/logout");
   };
 
   if (userContext.userInfo === null) {
@@ -51,24 +48,33 @@ const NavBarUser = () => {
 
   return (
     <>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <Typography sx={{ mr: 1, fontSize: 18 }}>
-          {userContext.userInfo.firstName}
-        </Typography>
-        <Tooltip title="Open settings">
-          <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
+      <Tooltip title="Meniu">
+        <Box
+          sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+          onClick={handleOpenMenu}
+        >
+          <Typography sx={{ mr: 1.5, fontSize: 18 }}>
+            {userContext.userInfo.fullName}
+          </Typography>
+          <IconButton ref={avatarElement} sx={{ p: 0 }}>
             <Avatar
               sx={{ width: 35, height: 35 }}
-              alt="User User"
-              src="/static/images/avatar/2.jpg"
-            />
+              alt={userContext.userInfo.fullName}
+              //TODO: add random color dependant on user full name
+              src={
+                userContext.userInfo.avatar === null
+                  ? undefined
+                  : `${IMG_URL}${userContext.userInfo.avatar}`
+              }
+            >
+              {userContext.userInfo.fullName[0]}
+            </Avatar>
           </IconButton>
-        </Tooltip>
-      </div>
+        </Box>
+      </Tooltip>
       <Menu
         elevation={1}
-        sx={{ mt: "30px" }}
-        id="menu-appbar"
+        sx={{ mt: "35px" }}
         anchorEl={menuAnchorElement}
         anchorOrigin={{
           vertical: "top",
@@ -82,14 +88,30 @@ const NavBarUser = () => {
         open={!!menuAnchorElement}
         onClose={handleCloseMenu}
       >
-        {settings.map((setting) => (
-          <MenuItem key={setting} onClick={handleCloseMenu}>
-            <Typography textAlign="center">{setting}</Typography>
-          </MenuItem>
-        ))}
-        <MenuItem key={"eh"} onClick={redirectToHomepage}>
-          <Typography textAlign="center">Logout</Typography>
-        </MenuItem>
+        <ListItemButton
+          component={Link}
+          key="profile"
+          to="/profile"
+          disableRipple
+          onClick={handleCloseMenu}
+        >
+          <ListItemIcon sx={{ minWidth: "40px" }}>
+            <ProfileIcon />
+          </ListItemIcon>
+          Profilis
+        </ListItemButton>
+        <ListItemButton
+          component={Link}
+          key="logout"
+          to="/logout"
+          disableRipple
+          onClick={handleCloseMenu}
+        >
+          <ListItemIcon sx={{ minWidth: "40px" }}>
+            <LogoutIcon />
+          </ListItemIcon>
+          Atsijungti
+        </ListItemButton>
       </Menu>
     </>
   );

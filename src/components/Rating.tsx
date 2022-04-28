@@ -3,8 +3,9 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownIcon from "@mui/icons-material/ThumbDownOutlined";
 import { useContext, useState } from "react";
 import { API_URL } from "../utils/Config";
-import { HTTPMethod } from "../utils/Random";
+import { HTTPMethod, Response, sleep } from "../utils/Random";
 import { UserContext } from "./UserContext";
+import { green, lightGreen, red } from "@mui/material/colors";
 
 export enum RatingType {
   Post,
@@ -18,7 +19,7 @@ export interface Rating {
 
 interface RatingState {
   userRating: Rating | null;
-  postRating: number;
+  parentRating: number;
 }
 
 interface PartialProps {
@@ -35,26 +36,26 @@ type Props = RatingState & PartialProps;
 
 const RatingElement = ({
   userRating,
-  postRating,
+  parentRating,
   parentId,
   ratingType,
 }: Props) => {
   const [ratingState, setRatingState] = useState<RatingState>({
     userRating: userRating,
-    postRating: postRating,
+    parentRating: parentRating,
   });
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { userInfo } = useContext(UserContext);
 
-  //TODO: Disallow pressing rating buttons while fetch hasn't returned a response?
+  //TODO: Show rating fetch errors in toast messages?
   const ratingFetch = async (
     fetchOptions: FetchOptions
-  ): Promise<Rating | null> => {
+  ): Promise<Response<Rating | null>> => {
     const ratingId: string | null =
-      userRating != null &&
+      ratingState.userRating != null &&
       (fetchOptions.httpMethod === HTTPMethod.DELETE ||
         fetchOptions.httpMethod === HTTPMethod.PATCH)
-        ? userRating?.id
+        ? ratingState.userRating?.id
         : null;
 
     const endpointUrl = `${API_URL}rating/${ratingId ?? ""}`;
@@ -64,166 +65,174 @@ const RatingElement = ({
         method: fetchOptions.httpMethod,
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token") ?? ""}`,
         },
         body: fetchOptions.payload,
       });
-
-      //IMPORTANT: response.ok yra true, kai statusCode yra nuo 200 iki 299
-      if (!response.ok) {
-        console.log("TODO: NEPAVYKO ĮVYKDYTI ĮVERTINIMO UŽKLAUSOS");
-        return null;
-      }
+      await sleep(200);
 
       if (response.status === 200 || response.status === 201) {
-        return (await response.json()) as Rating;
+        return {
+          isSuccess: true,
+          data: (await response.json()) as Rating,
+        } as Response<Rating | null>;
       }
+
+      if (response.status === 204) {
+        return {
+          isSuccess: true,
+          data: null,
+        } as Response<Rating | null>;
+      }
+
+      //TODO: Show error in toast message?
     } catch (error) {
-      console.log(error);
+      //TODO: Show error in toast message?
     }
-    return null;
+
+    return {
+      isSuccess: false,
+      data: null,
+    } as Response<Rating | null>;
   };
 
   //TODO: HandleLikeClick and HandleDislikeClick can be combined into one method
-  const handleLikeClick = () => {
+  const handleLikeClick = async () => {
+    setIsLoading(true);
+
     if (ratingState.userRating === null) {
-      //TODO: Create like
-      ratingFetch({
+      await ratingFetch({
         httpMethod: HTTPMethod.POST,
         payload: JSON.stringify({
           isPositive: true,
           postId: ratingType === RatingType.Post ? parentId : null,
           commentId: ratingType === RatingType.Comment ? parentId : null,
         }),
-      }).then((newUserRating) => {
-        console.log();
+      }).then(({ isSuccess, data: newUserRating }) => {
+        if (!isSuccess) return;
         setRatingState((currentRatingState) => {
           return {
             userRating: newUserRating,
-            postRating: currentRatingState.postRating + 1,
+            parentRating: currentRatingState.parentRating + 1,
           };
         });
       });
+      setIsLoading(false);
       return;
     }
 
     if (ratingState.userRating.isPositive === false) {
-      //TODO: Update rating to like
-      ratingFetch({
+      await ratingFetch({
         httpMethod: HTTPMethod.PATCH,
         payload: JSON.stringify({
           isPositive: true,
         }),
-      }).then((updatedUserRating) => {
+      }).then(({ isSuccess, data: updatedUserRating }) => {
+        if (!isSuccess) return;
         setRatingState((currentRatingState) => {
           return {
             userRating: updatedUserRating,
-            postRating: currentRatingState.postRating + 2,
+            parentRating: currentRatingState.parentRating + 2,
           };
         });
       });
-
+      setIsLoading(false);
       return;
     }
 
-    //x.userRating === true
-    //TODO: Delete like
-    ratingFetch({
+    //if (ratingState.userRating.isPositive === true)
+    await ratingFetch({
       httpMethod: HTTPMethod.DELETE,
-    }).then((nullUserRating) => {
+    }).then(({ isSuccess, data: nullUserRating }) => {
+      if (!isSuccess) return;
       setRatingState((currentRatingState) => {
         return {
           userRating: nullUserRating,
-          postRating: currentRatingState.postRating - 1,
+          parentRating: currentRatingState.parentRating - 1,
         };
       });
     });
+    setIsLoading(false);
   };
 
-  // const handleLikeClick = () => {
-  //   setRatingState((x) => {
-  //     if (x.userRating === null) {
-  //       //TODO: Create like
-  //       await ratingFetch({
-  //         httpMethod: HTTPMethod.POST,
-  //         payload: JSON.stringify({
-  //           isPositive: true,
-  //           postId: ratingType === RatingType.Post ? parentId : null,
-  //           commentId: ratingType === RatingType.Comment ? parentId : null,
-  //         }),
-  //       });
+  const handleDislikeClick = async () => {
+    setIsLoading(true);
 
-  //       return {
-  //         userRating: {
-  //           isPositive: true,
-  //           id: "TODO: SET ID FROM CREATED LIKE",
-  //         },
-  //         postRating: x.postRating + 1,
-  //       };
-  //     }
-  //     if (x.userRating.isPositive === false) {
-  //       //TODO: Update rating to like
-  //       return {
-  //         userRating: {
-  //           isPositive: true,
-  //           id: x.userRating.id,
-  //         },
-  //         postRating: x.postRating + 2,
-  //       };
-  //     }
-  //     //x.userRating === true
-  //     //TODO: Delete like
-  //     return {
-  //       userRating: null,
-  //       postRating: x.postRating - 1,
-  //     };
-  //   });
-  // };
+    if (ratingState.userRating === null) {
+      await ratingFetch({
+        httpMethod: HTTPMethod.POST,
+        payload: JSON.stringify({
+          isPositive: false,
+          postId: ratingType === RatingType.Post ? parentId : null,
+          commentId: ratingType === RatingType.Comment ? parentId : null,
+        }),
+      }).then(({ isSuccess, data: newUserRating }) => {
+        if (!isSuccess) return;
+        setRatingState((currentRatingState) => {
+          return {
+            userRating: newUserRating,
+            parentRating: currentRatingState.parentRating - 1,
+          };
+        });
+      });
+      setIsLoading(false);
+      return;
+    }
 
-  const handleDislikeClick = () => {
-    setRatingState((x) => {
-      if (x.userRating === null) {
-        //TODO: Create dislike
+    if (ratingState.userRating.isPositive === true) {
+      await ratingFetch({
+        httpMethod: HTTPMethod.PATCH,
+        payload: JSON.stringify({
+          isPositive: false,
+        }),
+      }).then(({ isSuccess, data: updatedUserRating }) => {
+        if (!isSuccess) return;
+        setRatingState((currentRatingState) => {
+          return {
+            userRating: updatedUserRating,
+            parentRating: currentRatingState.parentRating - 2,
+          };
+        });
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    //if (ratingState.userRating.isPositive === false)
+    await ratingFetch({
+      httpMethod: HTTPMethod.DELETE,
+    }).then(({ isSuccess, data: nullUserRating }) => {
+      if (!isSuccess) return;
+      setRatingState((currentRatingState) => {
         return {
-          userRating: {
-            isPositive: false,
-            id: "TODO: SET ID FROM CREATED LIKE",
-          },
-          postRating: x.postRating - 1,
+          userRating: nullUserRating,
+          parentRating: currentRatingState.parentRating + 1,
         };
-      }
-      if (x.userRating.isPositive === true) {
-        //TODO: Update rating to dislike
-        return {
-          userRating: {
-            isPositive: false,
-            id: x.userRating.id,
-          },
-          postRating: x.postRating - 2,
-        };
-      }
-      //x.userRating === false
-      //TODO: Delete dislike
-      return {
-        userRating: null,
-        postRating: x.postRating + 1,
-      };
+      });
     });
+    setIsLoading(false);
   };
 
   return (
     <>
       <IconButton
-        disabled={userInfo === null}
+        disabled={userInfo === null || isLoading}
         onClick={handleLikeClick}
         aria-label="like"
         size="small"
-        color={ratingState.userRating?.isPositive ? "success" : undefined}
+        color={
+          ratingState.userRating != null && ratingState.userRating.isPositive
+            ? "success"
+            : undefined
+        }
       >
-        <ThumbUpIcon fontSize="medium" />
+        <ThumbUpIcon
+          fontSize={ratingType === RatingType.Post ? "medium" : "small"}
+        />
       </IconButton>
 
       <IconButton
-        disabled={userInfo === null}
+        disabled={userInfo === null || isLoading}
         onClick={handleDislikeClick}
         aria-label="dislike"
         size="small"
@@ -233,15 +242,21 @@ const RatingElement = ({
             : undefined
         }
       >
-        <ThumbDownIcon fontSize="medium" />
+        <ThumbDownIcon
+          fontSize={ratingType === RatingType.Post ? "medium" : "small"}
+        />
       </IconButton>
 
       <Typography
-        variant="button"
-        color="green"
-        sx={{ ml: 1, placeSelf: "center", fontSize: 18 }}
+        variant="button" //TODO: Change color
+        color={ratingState.parentRating < 0 ? "#ed7676" : lightGreen[700]}
+        sx={{
+          ml: ratingType === RatingType.Post ? 1 : 0.8,
+          placeSelf: "center",
+          fontSize: ratingType === RatingType.Post ? 18 : 16,
+        }}
       >
-        {ratingState.postRating}
+        {ratingState.parentRating}
       </Typography>
     </>
   );

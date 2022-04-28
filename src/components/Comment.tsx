@@ -1,8 +1,12 @@
-import { Avatar, Box, Card, IconButton, Typography } from "@mui/material";
-import { green } from "@mui/material/colors";
-import ThumbUpIcon from "@mui/icons-material/ThumbUpOutlined";
-import ThumbDownIcon from "@mui/icons-material/ThumbDownOutlined";
-import { countryCode, dateTimeFormatOptions } from "../utils/Config";
+import { Box, Button, Card, Collapse, Typography } from "@mui/material";
+import RatingElement, { Rating, RatingType } from "./Rating";
+import moment from "moment";
+import { DateTooltip } from "../utils/Random";
+import UserAvatar, { AvatarType } from "./UserAvatar";
+import { User } from "./User";
+import { useState } from "react";
+import CommentCreateForm from "./CommentCreateForm";
+import ReplyIcon from "@mui/icons-material/Reply";
 
 export interface CommentGeneric<T> {
   id: string;
@@ -10,106 +14,142 @@ export interface CommentGeneric<T> {
   isDeleted: boolean;
   creationDate: T;
   editDate: T | null;
-  userId: string;
-  userFullName: string;
-  replyToId: string;
+  user: User;
+  userRating: Rating | null;
   rating: number;
+  postId: string;
+  replyToId: string | null;
   replies: CommentGeneric<T>[] | null;
 }
 
 export type Comment = CommentGeneric<Date>;
 
 interface Props {
+  setNewComment: React.Dispatch<React.SetStateAction<Comment | null>>;
+  newCommentRef: React.RefObject<HTMLDivElement> | null;
   comment: Comment;
 }
 
-const CommentElement = ({ comment }: Props) => {
-  const leftOffset = comment.replyToId ? 6 : 0;
+const CommentElement = ({ comment, setNewComment, newCommentRef }: Props) => {
+  const [isReplyFormExpanded, setIsReplyFormExpanded] = useState(false);
+  const leftOffset = comment.replyToId !== null ? 6 : 0;
 
+  const formCommentDateTooltipString = (): string => {
+    let commentDateString = moment(comment.creationDate).format(
+      "YYYY MMMM D, ddd - HH:mm"
+    );
+
+    if (comment.editDate !== null) {
+      commentDateString =
+        commentDateString +
+        `; Redaguota: ${moment(comment.editDate).format(
+          "YYYY MMMM D, ddd - HH:mm"
+        )}`;
+    }
+
+    return commentDateString;
+  };
+
+  //TODO: Create an edit, delete etc... menu button at bottom right
+  //TODO: Create a reply button
   return (
-    <Card
-      sx={{
-        backgroundColor: "#FAFAFA",
-        px: 2,
-        py: 1,
-        ml: leftOffset,
-        mt: 1.5,
-      }}
-      variant="outlined"
-    >
-      <Box>
-        <div className="CommentDataGridTop">
-          <div className="CommentDataGridUser">
-            <Avatar
-              sx={{ width: 25, height: 25, bgcolor: green[500] }}
-              alt={comment.userFullName[0]}
-            >
-              {comment.userFullName[0]}
-            </Avatar>
-            <Typography
-              variant="subtitle2"
-              color="text.secondary"
-              sx={{ ml: 1, placeSelf: "center" }}
-            >
-              {comment.userFullName}
-            </Typography>
+    <>
+      <Card
+        ref={newCommentRef}
+        sx={{
+          backgroundColor: "#FAFAFA",
+          px: 2,
+          pt: 1,
+          pb: 0.5,
+          ml: leftOffset,
+          mt: 1.5,
+        }}
+        variant="outlined"
+      >
+        <Box>
+          <div className="CommentDataGridTop">
+            <div className="CommentDataGridUser">
+              <UserAvatar
+                userId={comment.user.id}
+                userFullName={comment.user.fullName}
+                avatar={comment.user.avatar}
+                avatarType={AvatarType.Comment}
+              />
+            </div>
+            <div className="CommentDataGridDate">
+              <DateTooltip
+                title={formCommentDateTooltipString()}
+                placement="left"
+              >
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  sx={{ placeSelf: "center" }}
+                >
+                  {moment(comment.creationDate).fromNow()}
+                  {comment.editDate !== null && "*"}
+                </Typography>
+              </DateTooltip>
+            </div>
           </div>
-          <div className="CommentDataGridDate">
-            <Typography
-              variant="subtitle2"
-              color="text.secondary"
-              sx={{ placeSelf: "center" }}
-            >
-              {comment.creationDate.toLocaleDateString(
-                countryCode,
-                dateTimeFormatOptions
+        </Box>
+        <Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            {comment.body}
+          </Typography>
+        </Box>
+        <Box>
+          <div className="CommentDataGridBottom">
+            <div className="CommentDataGridRating">
+              <RatingElement
+                userRating={comment.userRating}
+                parentRating={comment.rating}
+                parentId={comment.id}
+                ratingType={RatingType.Comment}
+              />
+            </div>
+            <div className="PostDataGridComments">
+              {comment.replyToId === null && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    padding: 0.5,
+                  }}
+                  onClick={() => {
+                    setIsReplyFormExpanded((x) => !x);
+                  }}
+                >
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Atsakyti
+                  </Typography>
+                  <ReplyIcon sx={{ ml: 1, color: "rgba(0, 0, 0, 0.6)" }} />
+                </Box>
+                // <Button
+                //   onClick={() => {
+                //     setIsReplyFormExpanded((x) => !x);
+                //   }}
+                //   size="medium"
+                //   endIcon={<ReplyIcon />}
+                // >
+                //   Atsakyti
+                // </Button>
               )}
-            </Typography>
+            </div>
           </div>
-        </div>
-      </Box>
-      <Box>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          {comment.body}
-        </Typography>
-      </Box>
-      <Box>
-        <div className="CommentDataGridBottom">
-          <div className="CommentDataGridRating">
-            <IconButton aria-label="like" size="small">
-              <ThumbUpIcon fontSize="small" />
-            </IconButton>
-            <IconButton aria-label="dislike" size="small">
-              <ThumbDownIcon fontSize="small" />
-            </IconButton>
-            <Typography
-              variant="button"
-              color="green"
-              sx={{ ml: 1, placeSelf: "center", fontSize: 16 }}
-            >
-              {comment.rating}
-            </Typography>
-          </div>
-          {/* <div className="CommentDataGridComments">
-            <Typography
-              variant="button"
-              color="blue"
-              sx={{ mr: 1, placeSelf: "center", fontSize: 18 }}
-            >
-              5
-            </Typography>
-            <IconButton
-              aria-label="comments"
-              size="small"
-              onClick={handleCommentsExpandClick}
-              aria-expanded={commentsExpanded}
-            >
-              <CommentIcon fontSize="medium" />
-            </IconButton>
-          </div> */}
-        </div>
-      </Box>
-    </Card>
+        </Box>
+      </Card>
+      {comment.replyToId === null && (
+        <Collapse in={isReplyFormExpanded} timeout="auto">
+          <CommentCreateForm
+            setNewComment={setNewComment}
+            postId={comment.postId}
+            replyToId={comment.id}
+          />
+        </Collapse>
+      )}
+    </>
   );
 };
 
