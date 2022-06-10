@@ -1,15 +1,18 @@
+import "moment/locale/lt";
+import "./index.css";
+
+import * as moment from "moment";
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
 import { BrowserRouter } from "react-router-dom";
-import { ThemeProvider } from "@mui/material";
-import { theme } from "./utils/Config";
-import UserProvider from "./components/UserProvider";
-import "moment/locale/lt";
-import * as moment from "moment";
 
-moment.locale("he");
+import { ThemeProvider } from "@mui/material";
+
+import App from "./Components/Main/App";
+import UserProvider from "./Components/Main/UserProvider";
+import { theme } from "./Utilities/theme";
+
+moment.locale("lt");
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>
