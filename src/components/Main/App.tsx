@@ -7,7 +7,7 @@ import Login from "../../Pages/LoginPage";
 import Logout from "../../Pages/Logout";
 import NotFound from "../../Pages/NotFoundPage";
 import PostCreateForm from "../../Pages/PostCreateForm";
-import PostListElement from "../../Pages/PostList";
+import PostListElement from "../../Pages/PostListPage";
 import PostView from "../../Pages/PostView";
 import Registration from "../../Pages/Registration";
 import UserView from "../../Pages/UserView";

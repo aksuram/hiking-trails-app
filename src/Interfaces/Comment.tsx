@@ -21,5 +21,6 @@ export interface CommentListGeneric<T> {
 }
 
 export type Comment = CommentGeneric<Date>;
+
 export type CommentList = CommentListGeneric<Date>;
 export type CommentListJson = CommentListGeneric<string>;

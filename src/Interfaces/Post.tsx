@@ -13,5 +13,18 @@ export interface PostGeneric<T> {
   rating: number;
 }
 
+export interface PostListGeneric<T> {
+  pageIndex: number;
+  pageSize: number;
+  totalPageCount: number;
+  totalItemCount: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+  items: PostGeneric<T>[];
+}
+
 export type Post = PostGeneric<Date>;
 export type PostJson = PostGeneric<string>;
+
+export type PostList = PostListGeneric<Date>;
+export type PostListJson = PostListGeneric<string>;
