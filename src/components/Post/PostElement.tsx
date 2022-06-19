@@ -1,56 +1,40 @@
-import moment from "moment";
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
-import CommentIcon from "@mui/icons-material/CommentOutlined";
-import DeleteIcon from "@mui/icons-material/DeleteOutlined";
-import EditIcon from "@mui/icons-material/ModeEditOutlined";
-import MoreIcon from "@mui/icons-material/MoreVert";
-import {
-  Box,
-  Card,
-  Collapse,
-  Divider,
-  IconButton,
-  ListItemButton,
-  ListItemIcon,
-  Menu,
-  Typography
-} from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
 
 import { AvatarType } from "../../Enums/AvatarType";
-import { RatingType } from "../../Enums/RatingType";
 import { CommentList, CommentListJson } from "../../Interfaces/Comment";
 import { FieldError, FieldErrorList } from "../../Interfaces/FieldError";
 import { Post } from "../../Interfaces/Post";
+import { canUserChangeEntity } from "../../Utilities/auth";
 import { API_URL } from "../../Utilities/config";
-import { guidToShortenedGuid } from "../../Utilities/guidEncoding";
 import { sleep } from "../../Utilities/sleep";
 import { UserContext } from "../Auth/UserContext";
-import CommentListElement from "../Comment/CommentList";
-import RatingElement from "../Rating/RatingElement";
-import { DateTooltip } from "../Shared/DateTooltip";
+import CreateEditDateText from "../Shared/CreateEditDateText";
 import UserAvatar from "../User/UserAvatar";
+import PostComments from "./PostComments";
+import PostFooter from "./PostFooter";
+import PostTitle from "./PostTitle";
 
 interface Props {
   post: Post;
 }
 
 const PostElement = ({ post }: Props) => {
+  //Errors
   const [isUnknownError, setIsUnknownError] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldError[]>([]);
+
+  //Button state
   const [areCommentsExpanded, setAreCommentsExpanded] = useState(false);
-  const [menuAnchorElement, setMenuAnchorElement] =
-    useState<HTMLButtonElement | null>(null);
+
+  //Data
   const [commentList, setCommentList] = useState<CommentList | null>(null);
   const { userInfo } = useContext(UserContext);
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setMenuAnchorElement(event.currentTarget);
-  };
-  const handleCloseMenu = () => {
-    setMenuAnchorElement(null);
-  };
+  //UI arrangement data
+  const isPostMenuEnabled = canUserChangeEntity(userInfo, post.user.id);
+  const titleWidth: string = isPostMenuEnabled ? "490px" : "544px";
 
   const handleExpandCommentsClick = () => {
     setAreCommentsExpanded((expanded) => !expanded);
@@ -71,6 +55,7 @@ const PostElement = ({ post }: Props) => {
 
   const getCommentList = async () => {
     try {
+      //TODO: Change to customFetch, use await for at least function, and fix loading indicator
       const response = await fetch(`${API_URL}post/${post.id}/comment`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token") ?? ""}`,
@@ -115,122 +100,48 @@ const PostElement = ({ post }: Props) => {
     }
   };
 
-  const formPostDateTooltipString = (): string => {
-    let postDateString = moment(post.creationDate).format(
-      "YYYY MMMM D, ddd - HH:mm"
-    );
-
-    if (post.editDate !== null) {
-      postDateString =
-        postDateString +
-        `; Redaguota: ${moment(post.editDate).format(
-          "YYYY MMMM D, ddd - HH:mm"
-        )}`;
-    }
-
-    return postDateString;
-  };
-
-  const isPostEditDeleteEnabled =
-    userInfo !== null &&
-    (userInfo.role === "Administrator" || userInfo.id === post.user.id);
-  const titleWidth = isPostEditDeleteEnabled ? "500px" : "550px";
-
   //TODO: Add a "Show more" button to post body, so that it wouldn't take up so much space
   return (
-    <Card className="PostListElement PostCard">
+    <Card
+      style={{
+        maxWidth: "600px",
+        minWidth: "600px",
+        paddingLeft: "20px",
+        paddingRight: "20px",
+        paddingTop: "16px",
+        paddingBottom: "16px",
+      }}
+    >
       <Box
-        sx={{
-          marginLeft: 0.5,
-          marginTop: 0.5,
-          marginRight: 0.5,
-          marginBottom: 1,
+        style={{
+          marginLeft: "8px",
+          marginRight: "8px",
+          marginBottom: "8px",
         }}
       >
-        {/* TODO: Export post title into its own component */}
+        <PostTitle
+          postId={post.id}
+          postTitle={post.title}
+          titleWidth={titleWidth}
+          isPostMenuEnabled={isPostMenuEnabled}
+        />
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "auto 40px",
-            columnGap: "10px",
-            alignItems: "center",
-            justifyContent: "space-between",
+            gridTemplateRows: "auto",
+            gridTemplateColumns: "auto auto",
+            marginTop: "6px",
+            marginLeft: "6px",
+            marginRight: "14px",
           }}
         >
-          <div style={{ gridColumnStart: 1, gridColumnEnd: 2 }}>
-            <Box
-              sx={{
-                // display: "flex",
-                // alignItems: "center",
-                textDecoration: "none",
-                color: "rgba(0, 0, 0, 0.87)",
-              }}
-              component={Link}
-              to={`/post/${guidToShortenedGuid(post.id)}`}
-            >
-              <div
-                style={{
-                  maxWidth: titleWidth,
-                  minWidth: titleWidth,
-                }}
-              >
-                <Typography variant="h5" noWrap sx={{ maxWidth: titleWidth }}>
-                  {post.title}
-                </Typography>
-              </div>
-            </Box>
-          </div>
-          <div style={{ gridColumnStart: 2, gridColumnEnd: 3 }}>
-            {isPostEditDeleteEnabled && (
-              <IconButton onClick={handleOpenMenu}>
-                <MoreIcon />
-              </IconButton>
-            )}
-          </div>
-        </div>
-        <Menu
-          elevation={1}
-          sx={{ mt: "35px" }}
-          anchorEl={menuAnchorElement}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          keepMounted
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
-          open={!!menuAnchorElement}
-          onClose={handleCloseMenu}
-        >
-          <ListItemButton
-            component={Link}
-            to="/"
-            disableRipple
-            onClick={handleCloseMenu}
+          <div
+            style={{
+              display: "flex",
+              justifySelf: "start",
+              alignSelf: "center",
+            }}
           >
-            <ListItemIcon sx={{ minWidth: "40px" }}>
-              <EditIcon />
-            </ListItemIcon>
-            Redaguoti
-          </ListItemButton>
-          <ListItemButton
-            component={Link}
-            to="/"
-            disableRipple
-            onClick={handleCloseMenu}
-          >
-            <ListItemIcon sx={{ minWidth: "40px" }}>
-              <DeleteIcon />
-            </ListItemIcon>
-            Ištrinti
-          </ListItemButton>
-        </Menu>
-        {/* TODO: Create an edit, delete etc... menu button at top right */}
-        {/* TODO: Post title should be clickable and link to the specific post */}
-        <div className="PostDataGridTop">
-          <div className="PostDataGridUser">
             <UserAvatar
               userId={post.user.id}
               userFullName={post.user.fullName}
@@ -238,17 +149,17 @@ const PostElement = ({ post }: Props) => {
               avatarType={AvatarType.Post}
             />
           </div>
-          <div className="PostDataGridDate">
-            <DateTooltip title={formPostDateTooltipString()} placement="left">
-              <Typography
-                variant="subtitle2"
-                color="text.secondary"
-                sx={{ placeSelf: "center" }}
-              >
-                {moment(post.creationDate).fromNow()}
-                {post.editDate !== null && "*"}
-              </Typography>
-            </DateTooltip>
+          <div
+            style={{
+              display: "flex",
+              justifySelf: "end",
+              alignSelf: "flex-start",
+            }}
+          >
+            <CreateEditDateText
+              creationDate={post.creationDate}
+              editDate={post.editDate}
+            />
           </div>
         </div>
       </Box>
@@ -258,39 +169,23 @@ const PostElement = ({ post }: Props) => {
         </Typography>
       </Box>
       <Box>
-        <div className="PostDataGridBottom">
-          <div className="PostDataGridRating">
-            <RatingElement
-              userRating={post.userRating}
-              parentRating={post.rating}
-              parentId={post.id}
-              ratingType={RatingType.Post}
-            />
-          </div>
-          <div className="PostDataGridComments">
-            {/* TODO: Show comment count? */}
-            <IconButton
-              aria-label="comments"
-              size="small"
-              onClick={handleExpandCommentsClick}
-              aria-expanded={areCommentsExpanded}
-            >
-              <CommentIcon fontSize="medium" />
-            </IconButton>
-          </div>
-        </div>
+        <PostFooter
+          userRating={post.userRating}
+          postRating={post.rating}
+          postId={post.id}
+          handleExpandCommentsClick={handleExpandCommentsClick}
+          areCommentsExpanded={areCommentsExpanded}
+        />
       </Box>
       <Box>
-        <Collapse in={areCommentsExpanded} timeout="auto">
-          <Divider sx={{ mt: 1, mb: 1.5 }} />
-          <CommentListElement
-            isUnknownError={isUnknownError}
-            fieldErrors={fieldErrors}
-            postId={post.id}
-            commentList={commentList}
-            setCommentList={setCommentList}
-          />
-        </Collapse>
+        <PostComments
+          areCommentsExpanded={areCommentsExpanded}
+          isUnknownError={isUnknownError}
+          fieldErrors={fieldErrors}
+          postId={post.id}
+          commentList={commentList}
+          setCommentList={setCommentList}
+        />
       </Box>
     </Card>
   );

@@ -1,8 +1,7 @@
 import { useContext, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
-import AddIcon from "@mui/icons-material/Add";
-import { Fab } from "@mui/material";
+import { flexbox } from "@mui/system";
 
 import { UserContext } from "../Components/Auth/UserContext";
 import CreatePostButton from "../Components/Post/CreatePostButton";
@@ -15,6 +14,7 @@ import UnknownErrorMessage from "../Components/Shared/UnknownErrorMessage";
 import { FieldError, FieldErrorList } from "../Interfaces/FieldError";
 import { PostList, PostListJson } from "../Interfaces/Post";
 import { API_URL } from "../Utilities/config";
+import { customFetch } from "../Utilities/customFetch";
 import { getPageIndexFromLocation } from "../Utilities/paging";
 import { sleepAtLeast } from "../Utilities/sleepAtLeast";
 
@@ -33,7 +33,6 @@ const PostListPage = () => {
   //Paging / Navigation
   const [totalPageCount, setTotalPageCount] = useState<number | null>(null);
   const location = useLocation();
-  const navigate = useNavigate();
   const pageIndex = getPageIndexFromLocation(location);
 
   useEffect(() => {
@@ -58,16 +57,14 @@ const PostListPage = () => {
   };
 
   const fetchPostList = async () => {
-    return await fetch(`${API_URL}post?pageNumber=${pageIndex}&pageSize=2`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token") ?? ""}`,
-      },
-    });
+    //TODO: REMOVE PAGE SIZE LATER
+    return await customFetch(
+      `${API_URL}post?pageNumber=${pageIndex}&pageSize=2`
+    );
   };
 
   const getPostList = async () => {
     try {
-      //TODO: REMOVE PAGE SIZE LATER
       resetState();
       const response = await loadPostList();
 
@@ -102,7 +99,6 @@ const PostListPage = () => {
     }
   };
 
-  //TODO: display message if no posts were found (postList.items is an empty array or undefined)
   return (
     <>
       <UnknownErrorMessage isUnknownError={isUnknownError} />
@@ -115,9 +111,11 @@ const PostListPage = () => {
         <CustomErrorMessage errorMessage="Nepavyko surasti įrašų" />
       )}
 
-      {postList?.items.map((x) => (
-        <PostElement key={x.id} post={x} />
-      ))}
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        {postList?.items.map((x) => (
+          <PostElement key={x.id} post={x} />
+        ))}
+      </div>
 
       {totalPageCount !== null && (
         <LinkPagination

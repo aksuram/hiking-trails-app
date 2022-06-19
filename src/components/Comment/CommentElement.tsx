@@ -9,6 +9,7 @@ import { RatingType } from "../../Enums/RatingType";
 import { Comment } from "../../Interfaces/Comment";
 import { UserContext } from "../Auth/UserContext";
 import RatingElement from "../Rating/RatingElement";
+import CreateEditDateText from "../Shared/CreateEditDateText";
 import { DateTooltip } from "../Shared/DateTooltip";
 import UserAvatar from "../User/UserAvatar";
 import CommentCreateForm from "./CommentCreateForm";
@@ -23,23 +24,6 @@ const CommentElement = ({ comment, setNewComment, newCommentRef }: Props) => {
   const [isReplyFormExpanded, setIsReplyFormExpanded] = useState(false);
   const { userInfo } = useContext(UserContext);
   const leftOffset = comment.replyToId !== null ? 6 : 0;
-
-  //TODO: Expand to it's own file as posts have the same function
-  const formCommentDateTooltipString = (): string => {
-    let commentDateString = moment(comment.creationDate).format(
-      "YYYY MMMM D, ddd - HH:mm"
-    );
-
-    if (comment.editDate !== null) {
-      commentDateString =
-        commentDateString +
-        `; Redaguota: ${moment(comment.editDate).format(
-          "YYYY MMMM D, ddd - HH:mm"
-        )}`;
-    }
-
-    return commentDateString;
-  };
 
   //TODO: Create an edit, delete etc... menu button at bottom right
   //TODO: Create a reply button
@@ -68,19 +52,10 @@ const CommentElement = ({ comment, setNewComment, newCommentRef }: Props) => {
               />
             </div>
             <div className="CommentDataGridDate">
-              <DateTooltip
-                title={formCommentDateTooltipString()}
-                placement="left"
-              >
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  sx={{ placeSelf: "center" }}
-                >
-                  {moment(comment.creationDate).fromNow()}
-                  {comment.editDate !== null && "*"}
-                </Typography>
-              </DateTooltip>
+              <CreateEditDateText
+                creationDate={comment.creationDate}
+                editDate={comment.editDate}
+              />
             </div>
           </div>
         </Box>
@@ -99,7 +74,7 @@ const CommentElement = ({ comment, setNewComment, newCommentRef }: Props) => {
                 ratingType={RatingType.Comment}
               />
             </div>
-            <div className="PostDataGridComments">
+            <div className="CommentDataGridComments">
               {comment.replyToId === null && userInfo !== null && (
                 <Box
                   sx={{

@@ -7,12 +7,16 @@ import { green, lightGreen, red } from "@mui/material/colors";
 
 import { HTTPMethod } from "../../Enums/HTTPMethod";
 import { RatingType } from "../../Enums/RatingType";
-import { FetchOptions } from "../../Interfaces/FetchOptions";
 import { Rating } from "../../Interfaces/Rating";
 import { Response } from "../../Interfaces/Response";
 import { API_URL } from "../../Utilities/config";
 import { sleep } from "../../Utilities/sleep";
 import { UserContext } from "../Auth/UserContext";
+
+interface RatingFetchOptions {
+  httpMethod: HTTPMethod;
+  payload?: BodyInit | null;
+}
 
 interface RatingState {
   userRating: Rating | null;
@@ -41,7 +45,7 @@ const RatingElement = ({
 
   //TODO: Show rating fetch errors in toast messages?
   const ratingFetch = async (
-    fetchOptions: FetchOptions
+    fetchOptions: RatingFetchOptions
   ): Promise<Response<Rating | null>> => {
     const ratingId: string | null =
       ratingState.userRating != null &&

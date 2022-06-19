@@ -11,7 +11,7 @@ interface Props {
 const LinkPagination = ({ linkRoute, pageIndex, totalPageCount }: Props) => {
   return (
     <Pagination
-      sx={{ mt: 1 }}
+      sx={{ mt: 2.5 }}
       showFirstButton
       showLastButton
       siblingCount={2}
