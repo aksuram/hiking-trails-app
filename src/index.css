@@ -60,3 +60,27 @@ code {
   justify-self: end;
   align-self: center;
 }
+
+/* Leaflet changes */
+.leaflet-container .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.8);
+  margin-right: 6px;
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.leaflet-touch .leaflet-bar {
+  border: 0;
+}
+
+.leaflet-touch .leaflet-bar a:first-child {
+  border-top-left-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-top-right-radius: 8px;
+}
+.leaflet-touch .leaflet-bar a:last-child {
+  border-bottom-left-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-bottom-right-radius: 8px;
+}

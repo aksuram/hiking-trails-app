@@ -64,6 +64,7 @@ const PostView = () => {
 
   return (
     <Box>
+      {/* TODO: Redirect to 404 page */}
       {urlPostId === null && (
         <Alert severity="error" sx={{ mt: 4, minWidth: "300px" }}>
           {INCORRECT_URL_MESSAGE}

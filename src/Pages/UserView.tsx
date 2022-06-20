@@ -28,6 +28,7 @@ const UserView = () => {
   //TODO: If urlUserId is the same as logged in user - redirect to "/profile"
   return (
     <Box>
+      {/* TODO: Redirect to 404 page */}
       {urlUserId === null && (
         <Alert severity="error" sx={{ mt: 4, minWidth: "300px" }}>
           {INCORRECT_URL_MESSAGE}

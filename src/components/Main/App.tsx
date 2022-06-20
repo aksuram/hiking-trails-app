@@ -10,6 +10,7 @@ import PostCreateForm from "../../Pages/PostCreateForm";
 import PostListElement from "../../Pages/PostListPage";
 import PostView from "../../Pages/PostView";
 import Registration from "../../Pages/Registration";
+import TrailPage from "../../Pages/TrailPage";
 import UserView from "../../Pages/UserView";
 import RequireAuth from "../Auth/RequireAuth";
 import NavBar from "./NavBar";
@@ -50,6 +51,8 @@ const App = () => {
           <Route path="/post/:postId" element={<PostView />} />
 
           <Route path="/user/:userId" element={<UserView />} />
+
+          <Route path="/trail" element={<TrailPage />} />
 
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404" replace />} />

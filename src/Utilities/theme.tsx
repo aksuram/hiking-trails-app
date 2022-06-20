@@ -24,7 +24,7 @@ const NewLinkBehavior = React.forwardRef<
 export const theme = createTheme({
   palette: {
     background: {
-      default: "#FAFAFA",
+      default: "rgb(246, 246, 246)",
     },
   },
   shape: {
