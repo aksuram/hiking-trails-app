@@ -84,7 +84,7 @@ const NavBarUser = () => {
         </Box>
       </Tooltip>
       <Menu
-        elevation={1}
+        elevation={2}
         sx={{ mt: "35px" }}
         anchorEl={menuAnchorElement}
         anchorOrigin={{
