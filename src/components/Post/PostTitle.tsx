@@ -29,7 +29,9 @@ const PostTitle = ({
         justifyContent: "space-between",
       }}
     >
-      <div style={{ gridColumnStart: 1, gridColumnEnd: 2 }}>
+      <div
+        style={{ gridColumnStart: 1, gridColumnEnd: isPostMenuEnabled ? 2 : 3 }}
+      >
         <Box
           sx={{
             textDecoration: "none",
@@ -44,15 +46,17 @@ const PostTitle = ({
               minWidth: titleWidth,
             }}
           >
-            <Typography noWrap variant="h5" sx={{ maxWidth: titleWidth }}>
+            <Typography variant="h5" noWrap sx={{ maxWidth: titleWidth }}>
               {postTitle}
             </Typography>
           </div>
         </Box>
       </div>
-      <div style={{ gridColumnStart: 2, gridColumnEnd: 3 }}>
-        {isPostMenuEnabled && <PostTitleMenuButton />}
-      </div>
+      {isPostMenuEnabled && (
+        <div style={{ gridColumnStart: 2, gridColumnEnd: 3 }}>
+          <PostTitleMenuButton />
+        </div>
+      )}
     </div>
   );
 };
