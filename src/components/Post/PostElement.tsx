@@ -119,6 +119,7 @@ const PostElement = ({ post }: Props) => {
           marginBottom: "8px",
         }}
       >
+        {/* TODO: Create a PostHeader component */}
         <PostTitle
           postId={post.id}
           postTitle={post.title}

@@ -22,9 +22,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, [userInfo]);
 
   return (
-    <UserContext.Provider
-      value={{ userInfo: userInfo, setUserInfo: setUserInfo }}
-    >
+    <UserContext.Provider value={{ userInfo, setUserInfo }}>
       {children}
     </UserContext.Provider>
   );

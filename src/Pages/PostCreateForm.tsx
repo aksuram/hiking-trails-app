@@ -51,9 +51,6 @@ const PostCreateForm = () => {
 
       if (response.status === 201) {
         const { id } = (await response.json()) as any;
-        console.log(id);
-        console.log(guidToShortenedGuid(id));
-        console.log(guidToShortenedGuid(id as string));
         navigate(`/post/${guidToShortenedGuid(id)}`);
         return;
       }
