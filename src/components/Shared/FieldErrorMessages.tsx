@@ -9,8 +9,8 @@ interface Props {
 const FieldErrorMessages = ({ fieldErrors }: Props) => {
   return (
     <>
-      {fieldErrors.map((fieldError) => (
-        <Typography variant="h5" sx={{ mt: 1 }}>
+      {fieldErrors.map((fieldError, idx) => (
+        <Typography key={idx} variant="h5" sx={{ mt: 1 }}>
           {fieldError.error}
         </Typography>
       ))}
