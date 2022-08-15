@@ -6,7 +6,7 @@ import { UserContext } from "./UserContext";
 
 interface Props {
   role?: Role;
-  children: JSX.Element;
+  children: React.ReactNode;
 }
 
 const RequireAuth = ({ role, children }: Props) => {
@@ -14,10 +14,14 @@ const RequireAuth = ({ role, children }: Props) => {
   const location = useLocation();
 
   if (userInfo === null || (role !== undefined && userInfo.role !== role)) {
-    return <Navigate to="/" state={{ from: location }} replace />;
+    return (
+      <>
+        <Navigate to="/" state={{ from: location }} replace />
+      </>
+    );
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 export default RequireAuth;
