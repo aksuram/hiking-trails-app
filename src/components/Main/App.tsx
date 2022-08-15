@@ -10,6 +10,7 @@ import PostCreateForm from "../../Pages/PostCreateForm";
 import PostListElement from "../../Pages/PostListPage";
 import PostView from "../../Pages/PostView";
 import Registration from "../../Pages/Registration";
+import TrailCreatePage from "../../Pages/TrailCreatePage";
 import TrailPage from "../../Pages/TrailPage";
 import UserView from "../../Pages/UserView";
 import RequireAuth from "../Auth/RequireAuth";
@@ -20,7 +21,6 @@ const App = () => {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <NavBar />
-      {/* //TODO: Export style to index.css */}
       <Container
         sx={{
           mt: 10,
@@ -53,6 +53,7 @@ const App = () => {
           <Route path="/user/:userId" element={<UserView />} />
 
           <Route path="/trail" element={<TrailPage />} />
+          <Route path="/trail/create" element={<TrailCreatePage />} />
 
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404" replace />} />

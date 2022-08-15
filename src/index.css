@@ -64,10 +64,10 @@ code {
 /* Leaflet changes */
 .leaflet-container .leaflet-control-attribution {
   background: rgba(255, 255, 255, 0.8);
-  margin-right: 6px;
-  margin-bottom: 6px;
+  margin-right: 10px;
+  margin-bottom: 10px;
   padding: 4px 8px;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .leaflet-touch .leaflet-bar {
@@ -75,12 +75,23 @@ code {
 }
 
 .leaflet-touch .leaflet-bar a:first-child {
-  border-top-left-radius: 8px;
+  border-top-left-radius: 10px;
   background-color: rgba(255, 255, 255, 0.8);
-  border-top-right-radius: 8px;
+  border-top-right-radius: 10px;
 }
 .leaflet-touch .leaflet-bar a:last-child {
-  border-bottom-left-radius: 8px;
+  border-bottom-left-radius: 10px;
   background-color: rgba(255, 255, 255, 0.8);
-  border-bottom-right-radius: 8px;
+  border-bottom-right-radius: 10px;
+}
+
+.leaflet-touch .leaflet-control-zoom-in,
+.leaflet-touch .leaflet-control-zoom-out {
+  font-size: 28px;
+}
+
+.leaflet-tooltip {
+  border-radius: 10px;
+  padding: 6px;
+  font-size: small;
 }
