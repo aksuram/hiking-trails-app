@@ -1,4 +1,3 @@
-import moment from "moment";
 import { useContext, useState } from "react";
 
 import ReplyIcon from "@mui/icons-material/Reply";
@@ -10,7 +9,6 @@ import { Comment } from "../../Interfaces/Comment";
 import { UserContext } from "../Auth/UserContext";
 import RatingElement from "../Rating/RatingElement";
 import CreateEditDateText from "../Shared/CreateEditDateText";
-import { DateTooltip } from "../Shared/DateTooltip";
 import UserAvatar from "../User/UserAvatar";
 import CommentCreateForm from "./CommentCreateForm";
 
