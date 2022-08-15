@@ -2,7 +2,7 @@ import moment from "moment";
 
 import { Typography } from "@mui/material";
 
-import { DateTooltip } from "./DateTooltip";
+import { FixedOffsetTooltip } from "./FixedOffsetTooltip";
 
 interface Props {
   creationDate: Date;
@@ -23,7 +23,7 @@ const CreateEditDateText = ({ creationDate, editDate }: Props) => {
   };
 
   return (
-    <DateTooltip title={formDateTooltipString()} placement="left">
+    <FixedOffsetTooltip title={formDateTooltipString()} placement="left">
       <Typography
         variant="subtitle2"
         color="text.secondary"
@@ -32,7 +32,7 @@ const CreateEditDateText = ({ creationDate, editDate }: Props) => {
         {moment(creationDate).fromNow()}
         {editDate !== null && "*"}
       </Typography>
-    </DateTooltip>
+    </FixedOffsetTooltip>
   );
 };
 
