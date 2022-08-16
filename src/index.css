@@ -1,14 +1,97 @@
 body {
+  overflow-y: scroll;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+/* -------- */
+/* COMMENTS */
+/* -------- */
+
+/* Comment top data grid */
+.CommentDataGridTop {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: auto auto;
+  margin-top: 4px;
+  margin-left: 4px;
+  margin-right: 12px;
+}
+
+.CommentDataGridUser {
+  display: flex;
+  justify-self: start;
+  align-self: center;
+}
+
+.CommentDataGridDate {
+  display: flex;
+  justify-self: end;
+  align-self: center;
+}
+
+/* Comment bottom data grid */
+.CommentDataGridBottom {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: auto auto;
+  margin-top: 4px;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+.CommentDataGridRating {
+  display: flex;
+  justify-self: start;
+  align-self: center;
+}
+
+.CommentDataGridComments {
+  display: flex;
+  justify-self: end;
+  align-self: center;
+}
+
+/* Leaflet changes */
+.leaflet-container .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.8);
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 4px 8px;
+  border-radius: 10px;
+}
+
+.leaflet-touch .leaflet-bar {
+  border: 0;
+}
+
+.leaflet-touch .leaflet-bar a:first-child {
+  border-top-left-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-top-right-radius: 10px;
+}
+.leaflet-touch .leaflet-bar a:last-child {
+  border-bottom-left-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-bottom-right-radius: 10px;
+}
+
+.leaflet-touch .leaflet-control-zoom-in,
+.leaflet-touch .leaflet-control-zoom-out {
+  font-size: 28px;
+}
+
+.leaflet-tooltip {
+  border-radius: 10px;
+  padding: 6px;
+  font-size: small;
 }

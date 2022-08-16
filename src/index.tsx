@@ -1,24 +1,27 @@
+import "moment/locale/lt";
+import "./index.css";
+
+import * as moment from "moment";
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
 import { BrowserRouter } from "react-router-dom";
-import { createTheme, ThemeProvider } from "@mui/material";
 
-const theme = createTheme({
-  palette: {
-    background: {
-      default: "#F5F5F5",
-    },
-  },
-});
+import { ThemeProvider } from "@mui/material";
+
+import App from "./Components/Main/App";
+import UserProvider from "./Components/Main/UserProvider";
+import { theme } from "./Utilities/theme";
+
+moment.locale("lt");
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     <React.StrictMode>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <UserProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </UserProvider>
     </React.StrictMode>
   </ThemeProvider>,
   document.getElementById("root")
