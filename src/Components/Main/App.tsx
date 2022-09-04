@@ -7,7 +7,7 @@ import Login from "../../Pages/LoginPage";
 import Logout from "../../Pages/Logout";
 import NotFound from "../../Pages/NotFoundPage";
 import PostCreateForm from "../../Pages/PostCreateForm";
-import PostListElement from "../../Pages/PostListPage";
+import PostListPage from "../../Pages/PostListPage";
 import PostView from "../../Pages/PostView";
 import Registration from "../../Pages/Registration";
 import TrailCreatePage from "../../Pages/TrailCreatePage";
@@ -32,14 +32,14 @@ const App = () => {
         }}
       >
         <Routes>
-          <Route path="" element={<PostListElement />} />
-          <Route path="/" element={<PostListElement />} />
+          <Route path="" element={<PostListPage />} />
+          <Route path="/" element={<PostListPage />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/registration" element={<Registration />} />
 
-          <Route path="/posts" element={<PostListElement />} />
+          <Route path="/posts" element={<PostListPage />} />
           <Route
             path="/post/create"
             element={

@@ -101,11 +101,10 @@ const PostListPage = () => {
 
   return (
     <>
+      {!isLoadingPostList && <CreatePostButton />}
       <UnknownErrorMessage isUnknownError={isUnknownError} />
       <FieldErrorMessages fieldErrors={fieldErrors} />
       <CircularLoadingIndicator isLoading={isLoadingPostList} />
-
-      {postList !== null && userInfo !== null && <CreatePostButton />}
 
       {postList !== null && postList.items.length === 0 && (
         <CustomErrorMessage errorMessage="Nepavyko surasti įrašų" />

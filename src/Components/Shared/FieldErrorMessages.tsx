@@ -8,13 +8,13 @@ interface Props {
 
 const FieldErrorMessages = ({ fieldErrors }: Props) => {
   return (
-    <>
+    <div style={{ marginTop: "24px" }}>
       {fieldErrors.map((fieldError, idx) => (
         <Typography key={idx} variant="h5" sx={{ mt: 1 }}>
           {fieldError.error}
         </Typography>
       ))}
-    </>
+    </div>
   );
 };
 
