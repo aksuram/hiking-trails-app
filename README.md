@@ -16,4 +16,8 @@ Frontend for a hiking trail social website. The backend can be found [here](http
 
 # Project Images
 
-<!-- ![alt text](docs/HikingTrailsApi.png "HikingTrails Api Endpoints") -->
+![Post with comments](docs/example3.png "Post with comments")
+![Post list](docs/example4.png "Post list")
+![Trail creation](docs/example5.png "Trail creation")
+![Registration](docs/example1.png "Registration")
+![Post creation](docs/example2.png "Post creation")
