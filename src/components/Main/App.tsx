@@ -32,8 +32,8 @@ const App = () => {
         }}
       >
         <Routes>
-          <Route path="" element={<HomePage />} />
-          <Route path="/" element={<HomePage />} />
+          <Route path="" element={<PostListElement />} />
+          <Route path="/" element={<PostListElement />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
