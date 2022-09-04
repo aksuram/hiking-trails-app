@@ -5,6 +5,7 @@ import CoordinateListHeader from "./CoordinateListHeader";
 import { CoordinateMenuProvider } from "./CoordinateMenuContext";
 import { useTrail } from "./TrailContext";
 
+//TODO: Try adding coordinates to the map without rendering the coordinate list and check if it improves rendering speed
 const CoordinateList = () => {
   const { coordinates } = useTrail();
 
@@ -40,6 +41,7 @@ const CoordinateList = () => {
               Koordinates galite pridėti žemėlapyje paspaudę dešinįjį pėlės
               mygtuką ir pasirinkus "Pridėti"
             </Typography>
+            //TODO: Add a "help" button that shows how to use the advanced features
           )}
           {coordinates.map((coordinate, index) => (
             <div

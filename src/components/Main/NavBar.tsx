@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+import HikingIcon from "@mui/icons-material/Hiking";
 import HomeIcon from "@mui/icons-material/HomeOutlined";
 import PostsIcon from "@mui/icons-material/TextSnippetOutlined";
 import {
@@ -25,6 +26,7 @@ const sideDrawerLinks: {
 }[] = [
   { name: "Namai", path: "/", icon: <HomeIcon /> },
   { name: "Įrašai", path: "/posts", icon: <PostsIcon /> },
+  { name: "Tako kūrimas", path: "/trail/create", icon: <HikingIcon /> },
 ];
 
 const NavBar = () => {
